@@ -2,6 +2,9 @@ package br.com.mecaniQA.api.model;
 
 import java.time.LocalDateTime;
 
+/**
+ * Peca
+ */
 public class Peca {
 
     private Long id;
