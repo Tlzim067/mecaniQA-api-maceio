@@ -1,49 +1,86 @@
 package br.com.mecaniQA.api.model;
 
 public class OrdemServico {
-    private Long id;
+    private Long codigo;
     private String descricao;
     private String cliente;
     private String veiculo;
     private StatusOrdemServico status;
 
+    public OrdemServico() {
+    }
+
+    public OrdemServico(Long codigo, String descricao, String cliente, String veiculo, StatusOrdemServico status) {
+        this.codigo = codigo;
+        this.descricao = descricao;
+        this.cliente = cliente;
+        this.veiculo = veiculo;
+        this.status = status;
+    }
+
     private OrdemServico(OrdemServicoBuilder builder) {
-        this.id = builder.id;
+        this.codigo = builder.codigo;
         this.descricao = builder.descricao;
         this.cliente = builder.cliente;
         this.veiculo = builder.veiculo;
         this.status = builder.status;
     }
 
-    public OrdemServico(Object object, String descricao2, String cliente2, String veiculo2, StatusOrdemServico aberta) {
-        //TODO Auto-generated constructor stub
+    public Long getCodigo() {
+        return codigo;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setCodigo(Long codigo) {
+        this.codigo = codigo;
+    }
 
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public String getDescricao() {
+        return descricao;
+    }
 
-    public String getCliente() { return cliente; }
-    public void setCliente(String cliente) { this.cliente = cliente; }
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-    public String getVeiculo() { return veiculo; }
-    public void setVeiculo(String veiculo) { this.veiculo = veiculo; }
+    public String getCliente() {
+        return cliente;
+    }
 
-    public StatusOrdemServico getStatus() { return status; }
-    public void setStatus(StatusOrdemServico status) { this.status = status; }
+    public void setCliente(String cliente) {
+        this.cliente = cliente;
+    }
 
-    // Implementação do Padrão Builder
+    public String getVeiculo() {
+        return veiculo;
+    }
+
+    public void setVeiculo(String veiculo) {
+        this.veiculo = veiculo;
+    }
+
+    public StatusOrdemServico getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusOrdemServico status) {
+        this.status = status;
+    }
+
+    // Método estático para iniciar o Builder
+    public static OrdemServicoBuilder builder() {
+        return new OrdemServicoBuilder();
+    }
+
+    // Padrão Builder
     public static class OrdemServicoBuilder {
-        private Long id;
+        private Long codigo;
         private String descricao;
         private String cliente;
         private String veiculo;
         private StatusOrdemServico status;
 
-        public OrdemServicoBuilder id(Long id) {
-            this.id = id;
+        public OrdemServicoBuilder codigo(Long codigo) {
+            this.codigo = codigo;
             return this;
         }
 
@@ -70,15 +107,5 @@ public class OrdemServico {
         public OrdemServico build() {
             return new OrdemServico(this);
         }
-    }
-
-    public Object getCodigo() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCodigo'");
-    }
-
-    public void setCodigo(long andIncrement) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCodigo'");
     }
 }

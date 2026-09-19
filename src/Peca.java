@@ -79,8 +79,8 @@ public class Peca {
     public void setQuantidadeEstoque(int quantidadeEstoque) {
         this.quantidadeEstoque = quantidadeEstoque;
     }
-
-    public double getPrecoCusto() {
+public
+     double getPrecoCusto() {
         return precoCusto;
     }
 

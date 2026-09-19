@@ -7,24 +7,26 @@ import br.com.mecaniQA.api.model.StatusOrdemServico;
 
 public class OrdemServicoMapper {
 
-   public static OrdemServico toEntity(OrdemServicoRequestDTO dto) {
-    if (dto == null) {
-        return null;
+    public static OrdemServico toEntity(OrdemServicoRequestDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        return OrdemServico.builder()
+                .descricao(dto.getDescricao())
+                .cliente(dto.getCliente())
+                .veiculo(dto.getVeiculo())
+                .status(StatusOrdemServico.ABERTA)
+                .build();
     }
 
-    return new OrdemServico(
-            null,
-            dto.getDescricao(),
-            dto.getCliente(),
-            dto.getVeiculo(),
-            StatusOrdemServico.ABERTA
-    );
-}
-
     public static OrdemServicoResponseDTO toDTO(OrdemServico salva) {
-        if (salva == null) return null;
+        if (salva == null) {
+            return null;
+        }
+
         return new OrdemServicoResponseDTO(
-                salva.getId(),
+                salva.getCodigo(),
                 salva.getDescricao(),
                 salva.getCliente(),
                 salva.getVeiculo(),
