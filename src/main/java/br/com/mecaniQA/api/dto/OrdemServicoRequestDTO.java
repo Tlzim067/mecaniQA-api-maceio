@@ -7,12 +7,33 @@ public class OrdemServicoRequestDTO {
 
     public OrdemServicoRequestDTO() {}
 
-    public String getDescricao() { return descricao; }
-    public void setDescricao(String descricao) { this.descricao = descricao; }
+    public OrdemServicoRequestDTO(String descricao, String cliente, String veiculo) {
+        this.descricao = descricao;
+        this.cliente = cliente;
+        this.veiculo = veiculo;
+    }
 
-    public String getCliente() { return cliente; }
-    public void setCliente(String cliente) { this.cliente = cliente; }
+    public String getDescricao() { 
+        return descricao; 
+    }
+    
+    public void setDescricao(String descricao) { 
+        this.descricao = descricao; 
+    }
 
-    public String getVeiculo() { return veiculo; }
-    public void setVeiculo(String veiculo) { this.veiculo = veiculo; }
+    public String getCliente() { 
+        return cliente; 
+    }
+    
+    public void setCliente(String cliente) { 
+        this.cliente = cliente; 
+    }
+
+    public String getVeiculo() { 
+        return veiculo; 
+    }
+    
+    public void setVeiculo(String veiculo) { 
+        this.veiculo = veiculo; 
+    }
 }
