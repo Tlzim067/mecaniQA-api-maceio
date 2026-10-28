@@ -1,3 +1,4 @@
+
 package br.com.mecaniqa.estoque;
 
 import java.math.BigDecimal;
@@ -57,13 +58,25 @@ public class Peca {
                                     String cor,
                                     LocalDateTime dataCadastro,
                                     LocalDateTime dataUltimaAtualizacao) {
+        if (codigo == null || codigo <= 0) {
+            throw new IllegalArgumentException(
+                    "Código da peça deve ser maior que zero");
+        }
+
+        if (dataCadastro == null || dataUltimaAtualizacao == null) {
+            throw new IllegalArgumentException(
+                    "As datas da peça são obrigatórias");
+        }
+
         Peca peca = new Peca(nome, codigoBarras, fornecedorMarca, categoria,
                 quantidadeEstoque, precoCusto, precoVenda);
+
         peca.codigo = codigo;
-        peca.tamanho = tamanho;
-        peca.cor = cor;
+        peca.tamanho = normalizar(tamanho);
+        peca.cor = normalizar(cor);
         peca.dataCadastro = dataCadastro;
         peca.dataUltimaAtualizacao = dataUltimaAtualizacao;
+
         return peca;
     }
 
@@ -116,6 +129,11 @@ public class Peca {
     }
 
     public void setCodigo(Long codigo) {
+        if (codigo != null && codigo <= 0) {
+            throw new IllegalArgumentException(
+                    "Código da peça deve ser maior que zero");
+        }
+
         this.codigo = codigo;
     }
 
@@ -172,55 +190,70 @@ public class Peca {
 
     public void adicionarEstoque(int quantidade) {
         if (quantidade <= 0) {
-            throw new IllegalArgumentException("Quantidade de entrada deve ser maior que zero");
+            throw new IllegalArgumentException(
+                    "Quantidade de entrada deve ser maior que zero");
         }
-        this.quantidadeEstoque = Math.addExact(this.quantidadeEstoque, quantidade);
+
+        this.quantidadeEstoque = Math.addExact(
+                this.quantidadeEstoque, quantidade);
+
         atualizarData();
     }
 
     public void removerEstoque(int quantidade) {
         if (quantidade <= 0) {
-            throw new IllegalArgumentException("Quantidade de saída deve ser maior que zero");
+            throw new IllegalArgumentException(
+                    "Quantidade de saída deve ser maior que zero");
         }
+
         if (quantidade > this.quantidadeEstoque) {
             throw new IllegalStateException(
-                    "Estoque insuficiente: disponível " + this.quantidadeEstoque
+                    "Estoque insuficiente: disponível "
+                            + this.quantidadeEstoque
                             + ", solicitado " + quantidade);
         }
+
         this.quantidadeEstoque -= quantidade;
         atualizarData();
     }
 
     private static void validarNome(String nome) {
         if (nome == null || nome.isBlank()) {
-            throw new IllegalArgumentException("Nome não pode ser vazio");
+            throw new IllegalArgumentException(
+                    "Nome não pode ser vazio");
         }
     }
 
     private static void validarCodigoBarras(String codigoBarras) {
         if (codigoBarras == null || codigoBarras.isBlank()) {
-            throw new IllegalArgumentException("Código de barras não pode ser vazio");
+            throw new IllegalArgumentException(
+                    "Código de barras não pode ser vazio");
         }
     }
 
     private static void validarCategoria(CategoriaPeca categoria) {
         if (categoria == null) {
-            throw new IllegalArgumentException("Categoria é obrigatória");
+            throw new IllegalArgumentException(
+                    "Categoria é obrigatória");
         }
     }
 
     private static void validarEstoque(int quantidade) {
         if (quantidade < 0) {
-            throw new IllegalArgumentException("Estoque não pode ser negativo");
+            throw new IllegalArgumentException(
+                    "Estoque não pode ser negativo");
         }
     }
 
     private static void validarPreco(BigDecimal preco, String campo) {
         if (preco == null) {
-            throw new IllegalArgumentException(campo + " é obrigatório");
+            throw new IllegalArgumentException(
+                    campo + " é obrigatório");
         }
+
         if (preco.signum() < 0) {
-            throw new IllegalArgumentException(campo + " não pode ser negativo");
+            throw new IllegalArgumentException(
+                    campo + " não pode ser negativo");
         }
     }
 
@@ -228,6 +261,7 @@ public class Peca {
         if (valor == null) {
             return null;
         }
+
         String limpo = valor.trim();
         return limpo.isEmpty() ? null : limpo;
     }
@@ -244,6 +278,7 @@ public class Peca {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Peca)) return false;
+
         Peca outra = (Peca) o;
         return codigo != null && codigo.equals(outra.codigo);
     }
