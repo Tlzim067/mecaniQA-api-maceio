@@ -1,65 +1,30 @@
 package br.com.mecaniqa.estoque;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "pecas")
 public class Peca {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codigo;
-
-    @Column(nullable = false)
     private String nome;
-
-    @Column(nullable = false, unique = true)
     private String codigoBarras;
-
     private String fornecedorMarca;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CategoriaPeca categoria;
-
-    @Column(nullable = false)
     private int quantidadeEstoque;
-
-    @Column(nullable = false)
-    private double precoCusto;
-
-    @Column(nullable = false)
-    private double precoVenda;
-
-    @Column(nullable = false, updatable = false)
+    private BigDecimal precoCusto;
+    private BigDecimal precoVenda;
     private LocalDateTime dataCadastro;
-
-    @Column(nullable = false)
     private LocalDateTime dataUltimaAtualizacao;
-
     private String tamanho;
     private String cor;
-
-    protected Peca() {
-    }
 
     public Peca(String nome,
                 String codigoBarras,
                 String fornecedorMarca,
                 CategoriaPeca categoria,
                 int quantidadeEstoque,
-                double precoCusto,
-                double precoVenda) {
-
+                BigDecimal precoCusto,
+                BigDecimal precoVenda) {
         validarNome(nome);
         validarCodigoBarras(codigoBarras);
         validarCategoria(categoria);
@@ -69,15 +34,37 @@ public class Peca {
 
         this.nome = nome.trim();
         this.codigoBarras = codigoBarras.trim();
-        this.fornecedorMarca = fornecedorMarca;
+        this.fornecedorMarca = normalizar(fornecedorMarca);
         this.categoria = categoria;
         this.quantidadeEstoque = quantidadeEstoque;
-        this.precoCusto = precoCusto;
-        this.precoVenda = precoVenda;
+        this.precoCusto = arredondar(precoCusto);
+        this.precoVenda = arredondar(precoVenda);
 
         LocalDateTime agora = LocalDateTime.now();
         this.dataCadastro = agora;
         this.dataUltimaAtualizacao = agora;
+    }
+
+    public static Peca reconstituir(Long codigo,
+                                    String nome,
+                                    String codigoBarras,
+                                    String fornecedorMarca,
+                                    CategoriaPeca categoria,
+                                    int quantidadeEstoque,
+                                    BigDecimal precoCusto,
+                                    BigDecimal precoVenda,
+                                    String tamanho,
+                                    String cor,
+                                    LocalDateTime dataCadastro,
+                                    LocalDateTime dataUltimaAtualizacao) {
+        Peca peca = new Peca(nome, codigoBarras, fornecedorMarca, categoria,
+                quantidadeEstoque, precoCusto, precoVenda);
+        peca.codigo = codigo;
+        peca.tamanho = tamanho;
+        peca.cor = cor;
+        peca.dataCadastro = dataCadastro;
+        peca.dataUltimaAtualizacao = dataUltimaAtualizacao;
+        return peca;
     }
 
     public Long getCodigo() {
@@ -104,11 +91,11 @@ public class Peca {
         return quantidadeEstoque;
     }
 
-    public double getPrecoCusto() {
+    public BigDecimal getPrecoCusto() {
         return precoCusto;
     }
 
-    public double getPrecoVenda() {
+    public BigDecimal getPrecoVenda() {
         return precoVenda;
     }
 
@@ -128,6 +115,10 @@ public class Peca {
         return cor;
     }
 
+    public void setCodigo(Long codigo) {
+        this.codigo = codigo;
+    }
+
     public void setNome(String nome) {
         validarNome(nome);
         this.nome = nome.trim();
@@ -141,7 +132,7 @@ public class Peca {
     }
 
     public void setFornecedorMarca(String fornecedorMarca) {
-        this.fornecedorMarca = fornecedorMarca;
+        this.fornecedorMarca = normalizar(fornecedorMarca);
         atualizarData();
     }
 
@@ -157,25 +148,25 @@ public class Peca {
         atualizarData();
     }
 
-    public void setPrecoCusto(double precoCusto) {
+    public void setPrecoCusto(BigDecimal precoCusto) {
         validarPreco(precoCusto, "Preço de custo");
-        this.precoCusto = precoCusto;
+        this.precoCusto = arredondar(precoCusto);
         atualizarData();
     }
 
-    public void setPrecoVenda(double precoVenda) {
+    public void setPrecoVenda(BigDecimal precoVenda) {
         validarPreco(precoVenda, "Preço de venda");
-        this.precoVenda = precoVenda;
+        this.precoVenda = arredondar(precoVenda);
         atualizarData();
     }
 
     public void setTamanho(String tamanho) {
-        this.tamanho = tamanho;
+        this.tamanho = normalizar(tamanho);
         atualizarData();
     }
 
     public void setCor(String cor) {
-        this.cor = cor;
+        this.cor = normalizar(cor);
         atualizarData();
     }
 
@@ -183,7 +174,7 @@ public class Peca {
         if (quantidade <= 0) {
             throw new IllegalArgumentException("Quantidade de entrada deve ser maior que zero");
         }
-        this.quantidadeEstoque += quantidade;
+        this.quantidadeEstoque = Math.addExact(this.quantidadeEstoque, quantidade);
         atualizarData();
     }
 
@@ -200,34 +191,49 @@ public class Peca {
         atualizarData();
     }
 
-    private void validarNome(String nome) {
+    private static void validarNome(String nome) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Nome não pode ser vazio");
         }
     }
 
-    private void validarCodigoBarras(String codigoBarras) {
+    private static void validarCodigoBarras(String codigoBarras) {
         if (codigoBarras == null || codigoBarras.isBlank()) {
             throw new IllegalArgumentException("Código de barras não pode ser vazio");
         }
     }
 
-    private void validarCategoria(CategoriaPeca categoria) {
+    private static void validarCategoria(CategoriaPeca categoria) {
         if (categoria == null) {
             throw new IllegalArgumentException("Categoria é obrigatória");
         }
     }
 
-    private void validarEstoque(int quantidade) {
+    private static void validarEstoque(int quantidade) {
         if (quantidade < 0) {
             throw new IllegalArgumentException("Estoque não pode ser negativo");
         }
     }
 
-    private void validarPreco(double preco, String campo) {
-        if (preco < 0) {
+    private static void validarPreco(BigDecimal preco, String campo) {
+        if (preco == null) {
+            throw new IllegalArgumentException(campo + " é obrigatório");
+        }
+        if (preco.signum() < 0) {
             throw new IllegalArgumentException(campo + " não pode ser negativo");
         }
+    }
+
+    private static String normalizar(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        String limpo = valor.trim();
+        return limpo.isEmpty() ? null : limpo;
+    }
+
+    private static BigDecimal arredondar(BigDecimal valor) {
+        return valor.setScale(2, RoundingMode.HALF_UP);
     }
 
     private void atualizarData() {
