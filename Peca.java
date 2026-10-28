@@ -1,24 +1,58 @@
-import java.time.LocalDateTime;
-import java.util.Objects;
+package br.com.mecaniqa.estoque;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "pecas")
 public class Peca {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codigo;
+
+    @Column(nullable = false)
     private String nome;
+
+    @Column(nullable = false, unique = true)
     private String codigoBarras;
+
     private String fornecedorMarca;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CategoriaPeca categoria;
+
+    @Column(nullable = false)
     private int quantidadeEstoque;
+
+    @Column(nullable = false)
     private double precoCusto;
+
+    @Column(nullable = false)
     private double precoVenda;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
+
+    @Column(nullable = false)
     private LocalDateTime dataUltimaAtualizacao;
 
     private String tamanho;
     private String cor;
 
-    public Peca(Long codigo,
-                String nome,
+    protected Peca() {
+    }
+
+    public Peca(String nome,
                 String codigoBarras,
                 String fornecedorMarca,
                 CategoriaPeca categoria,
@@ -33,7 +67,6 @@ public class Peca {
         validarPreco(precoCusto, "Preço de custo");
         validarPreco(precoVenda, "Preço de venda");
 
-        this.codigo = codigo;
         this.nome = nome.trim();
         this.codigoBarras = codigoBarras.trim();
         this.fornecedorMarca = fornecedorMarca;
@@ -206,12 +239,12 @@ public class Peca {
         if (this == o) return true;
         if (!(o instanceof Peca)) return false;
         Peca outra = (Peca) o;
-        return Objects.equals(codigo, outra.codigo);
+        return codigo != null && codigo.equals(outra.codigo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(codigo);
+        return Peca.class.hashCode();
     }
 
     @Override
